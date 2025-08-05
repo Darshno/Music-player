@@ -119,16 +119,16 @@
     let tindx = 0;
     let isplaying = false;
     const listsong = [
-        "Highest in the Room ",
-        "Sicko mode",
+        "Highest in the Room",
         "Fe!n",
+        "Sicko mode",
         "Shyne"
     ];
     const audioPlaylist = [
-        new Audio("music/tsong1.mp3"),
-        new Audio("music/tSong2.mp3"),
-        new Audio("music/tSong3.mp3"),
-        new Audio("music/tsong4.mp3")
+        new Audio("https://files.catbox.moe/nbiu26.mp3"),
+        new Audio("https://files.catbox.moe/rk8mg0.mp3"),
+        new Audio("https://files.catbox.moe/commww.mp3"),
+        new Audio("https://files.catbox.moe/yq47yr.mp3")
     ];
     const songcover = [
         'images/songscover/t1.jpg',
@@ -143,42 +143,22 @@
     const buttn = document.getElementById("bttn");
     const progressContainer = document.getElementById("progress-container");
     const progress = document.getElementById("progress");
-    function btf(){
-        covi.src = songcover[0];
-        title.textContent = listsong[0];
-        auds.src = audioPlaylist[0].src;
+
+    function loadSong(index) {
+        tindx = index;
+        covi.src = songcover[tindx];
+        title.textContent = listsong[tindx];
+        auds.src = audioPlaylist[tindx].src;
         auds.load();
         auds.play();
         isplaying = true;
         buttn.textContent = "⏸️";
     }
-    function wnd(){
-        covi.src = songcover[2];
-        title.textContent = listsong[2];
-        auds.src = audioPlaylist[2].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";
-    }
-    function und(){
-        covi.src = songcover[1];
-        title.textContent = listsong[1];
-        auds.src = audioPlaylist[1].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";       
-    }
-    function ttt(){
-        covi.src = songcover[3];
-        title.textContent = listsong[3];
-        auds.src = audioPlaylist[3].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";       
-    }
+
+    function btf() { loadSong(0); }
+    function wnd() { loadSong(1); }
+    function und() { loadSong(2); }
+    function ttt() { loadSong(3); }
 
     function pauseplay() {
         if (!isplaying) {
@@ -193,35 +173,16 @@
     }
 
     function next() {
-        tindx++;
-        if (tindx >= listsong.length) {
-            tindx = 0;
-        }
-        covi.src = songcover[tindx];
-        title.textContent = listsong[tindx];
-        auds.src = audioPlaylist[tindx].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";
+        tindx = (tindx + 1) % listsong.length;
+        loadSong(tindx);
     }
 
-    function previous(){
-        if (tindx === 0) {
-            tindx = listsong.length - 1;
-        } else {
-            tindx--;
-        }
-        covi.src = songcover[tindx];
-        title.textContent = listsong[tindx];
-        auds.src = audioPlaylist[tindx].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";    
+    function previous() {
+        tindx = (tindx - 1 + listsong.length) % listsong.length;
+        loadSong(tindx);
     }
 
-    // Progress bar click to seek
+    // Seek in progress bar
     progressContainer.addEventListener('click', (e) => {
         const width = progressContainer.clientWidth;
         const clickX = e.offsetX;
@@ -229,25 +190,21 @@
         auds.currentTime = (clickX / width) * duration;
     });
 
+    // Update progress bar
     auds.addEventListener('timeupdate', () => {
         const { duration, currentTime } = auds;
-        const percent = (currentTime / duration) * 100;
-        progress.style.width = percent + "%";
-    });
-    // Automatically play next song when current song ends
-    auds.addEventListener('ended', () => {
-        tindx++;
-        if (tindx >= listsong.length) {
-            tindx = 0;
+        if (duration > 0) {
+            const percent = (currentTime / duration) * 100;
+            progress.style.width = percent + "%";
         }
-        covi.src = songcover[tindx];
-        title.textContent = listsong[tindx];
-        auds.src = audioPlaylist[tindx].src;
-        auds.load();
-        auds.play();
-        isplaying = true;
-        buttn.textContent = "⏸️";
+    });
+
+    // Auto-play next song
+    auds.addEventListener('ended', () => {
+        tindx = (tindx + 1) % listsong.length;
+        loadSong(tindx);
     });
 </script>
+
 </body>
 </html>
